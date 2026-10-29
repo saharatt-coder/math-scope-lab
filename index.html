@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="วัดรูพรุนขนมปังซาวโดว์ด้วยการประมวลผลภาพ แล้วเชื่อมสู่เรขาคณิตและแคลคูลัส" />
   <title>MathScope Lab — Sourdough Pore Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -13,74 +17,67 @@
       <div>
         <p class="eyebrow">MATHSCOPE LAB</p>
         <h1>Sourdough Pore Analyzer</h1>
-        <p class="header-copy">วัดขนาดรูพรุนด้วยการประมวลผลภาพ ทดลองประมาณพื้นที่ด้วยรูปเรขาคณิต และเชื่อมข้อมูลสู่แคลคูลัส</p>
+        <p class="header-copy">วัดรูพรุนขนมปังจากภาพถ่าย ลองประมาณพื้นที่ด้วยรูปเรขาคณิต แล้วต่อยอดเป็นผลบวกรีมันน์และปริพันธ์</p>
       </div>
       <div class="header-actions">
-        <span class="phase-badge">เวอร์ชันสมบูรณ์สำหรับใช้งานภายในเครื่อง</span>
-        <button id="printReportBtn" class="ghost-button" type="button">พิมพ์รายงาน / PDF</button>
+        <button id="helpBtn" class="ghost-button" type="button">❓ วิธีใช้</button>
+        <button id="printReportBtn" class="ghost-button" type="button">🖨 พิมพ์ / PDF</button>
       </div>
     </header>
 
     <nav class="tab-nav" aria-label="หน้าหลัก">
-      <button class="tab-button active" data-tab="analyze">1. วิเคราะห์ภาพ</button>
-      <button class="tab-button" data-tab="geometry">2. ประมาณพื้นที่ด้วยรูปเรขาคณิต</button>
-      <button class="tab-button" data-tab="calculus">3. แคลคูลัส</button>
-      <button class="tab-button" data-tab="repository">4. คลังข้อมูล</button>
-      <button class="tab-button" data-tab="dashboard">5. Dashboard</button>
+      <button class="tab-button active" data-tab="analyze"><span class="tab-num">1</span> วิเคราะห์ภาพ</button>
+      <button class="tab-button" data-tab="geometry"><span class="tab-num">2</span> ประมาณด้วยรูปเรขาคณิต</button>
+      <button class="tab-button" data-tab="calculus"><span class="tab-num">3</span> แคลคูลัส</button>
+      <button class="tab-button" data-tab="repository"><span class="tab-num">4</span> คลังข้อมูล</button>
+      <button class="tab-button" data-tab="dashboard"><span class="tab-num">5</span> Dashboard</button>
     </nav>
 
     <main>
+      <!-- ============ TAB 1: ANALYZE ============ -->
       <section id="tab-analyze" class="tab-panel active">
+        <ol id="stepper" class="stepper" aria-label="ความคืบหน้า">
+          <li data-step="image"><button type="button"><span class="dot">1</span><span><strong>เลือกภาพ</strong><small>อัปโหลดหรือใช้ภาพตัวอย่าง</small></span></button></li>
+          <li data-step="scale"><button type="button"><span class="dot">2</span><span><strong>ตั้งสเกล</strong><small>ไม่บังคับ แต่ควรทำ</small></span></button></li>
+          <li data-step="roi"><button type="button"><span class="dot">3</span><span><strong>เลือกบริเวณ</strong><small>ลากครอบเนื้อขนมปัง</small></span></button></li>
+          <li data-step="analyze"><button type="button"><span class="dot">4</span><span><strong>วิเคราะห์</strong><small>หารูพรุนอัตโนมัติ</small></span></button></li>
+        </ol>
+        <p id="nextHint" class="next-hint">เริ่มจากเลือกภาพหน้าตัดขนมปัง หรือกด “ใช้ภาพตัวอย่าง”</p>
+
         <div class="analysis-layout">
           <aside class="control-panel">
-            <section class="panel-section">
+            <section class="panel-section" id="section-image">
               <div class="section-heading">
                 <span class="step-number">1</span>
                 <div>
-                  <h2>ภาพตัวอย่าง</h2>
-                  <p>รองรับ PNG, JPG, WEBP ไม่เกิน 20 MB</p>
+                  <h2>ภาพหน้าตัดขนมปัง</h2>
+                  <p>PNG, JPG หรือ WEBP ไม่เกิน 20 MB</p>
                 </div>
               </div>
-              <label class="upload-button">
+              <label class="drop-zone" id="dropZone">
                 <input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp" />
-                เลือกภาพ
+                <span class="drop-icon">📷</span>
+                <strong>คลิกเพื่อเลือกภาพ</strong>
+                <span>หรือลากไฟล์มาวางตรงนี้</span>
               </label>
-              <button id="demoImageBtn" class="secondary-button" type="button">ใช้ภาพทดลอง</button>
+              <div class="button-pair">
+                <button id="demoImageBtn" class="secondary-button" type="button">🍞 ใช้ภาพตัวอย่าง</button>
+                <button id="testImageBtn" class="secondary-button" type="button">🎯 ภาพทดสอบความแม่นยำ</button>
+              </div>
               <p id="imageName" class="file-name">ยังไม่ได้เลือกไฟล์</p>
             </section>
 
-            <section class="panel-section">
+            <section class="panel-section" id="section-scale">
               <div class="section-heading">
                 <span class="step-number">2</span>
                 <div>
-                  <h2>เครื่องมือบนภาพ</h2>
-                  <p>เลื่อนภาพ กำหนดสเกล และลาก ROI</p>
+                  <h2>ตั้งสเกล (แปลงพิกเซลเป็น mm)</h2>
+                  <p>วางไม้บรรทัดไว้ข้างขนมปังตอนถ่ายภาพ แล้วคลิก 2 จุดบนไม้บรรทัด</p>
                 </div>
               </div>
-              <div class="tool-grid">
-                <button class="tool-button active" data-tool="pan" type="button">✋ Pan</button>
-                <button class="tool-button" data-tool="scale" type="button">📏 Scale</button>
-                <button class="tool-button" data-tool="roi-ellipse" type="button">◯ ROI วงรี</button>
-                <button class="tool-button" data-tool="roi-rect" type="button">▭ ROI สี่เหลี่ยม</button>
-                <button class="tool-button" data-tool="select" type="button">☝ Select Pore</button>
-              </div>
-              <div class="button-pair">
-                <button id="fitImageBtn" class="secondary-button" type="button">จัดภาพพอดีจอ</button>
-                <button id="clearRoiBtn" class="danger-ghost-button" type="button">ล้าง ROI</button>
-              </div>
-              <div id="toolHint" class="tool-hint">โหมด Pan — ลากเพื่อเลื่อนภาพ และหมุนล้อเพื่อซูม</div>
-            </section>
-
-            <section class="panel-section">
-              <div class="section-heading">
-                <span class="step-number">3</span>
-                <div>
-                  <h2>กำหนดสเกล</h2>
-                  <p>คลิก 2 จุดบนไม้บรรทัด แล้วระบุความยาวจริง</p>
-                </div>
-              </div>
+              <button id="startScaleBtn" class="secondary-button" type="button">📏 คลิก 2 จุดบนไม้บรรทัด</button>
               <div class="input-row">
-                <label>ความยาวจริง
+                <label>ระยะจริงระหว่าง 2 จุด
                   <input id="realLengthInput" type="number" min="0.0001" step="any" value="10" />
                 </label>
                 <label>หน่วย
@@ -93,85 +90,143 @@
               </div>
               <div class="mini-result">
                 <span id="pixelLengthReadout">— px</span>
-                <strong id="calibrationReadout">ยังไม่ Calibrate</strong>
+                <strong id="calibrationReadout">ยังไม่ตั้งสเกล</strong>
               </div>
+              <details class="inline-details">
+                <summary>📐 วัดระยะบนภาพ (เช่น ความสูงขนมปัง)</summary>
+                <button id="startMeasureBtn" class="secondary-button" type="button">เริ่มวัด: คลิก 2 จุด</button>
+                <div class="mini-result">
+                  <span>ระยะที่วัดได้</span>
+                  <strong id="measureReadout">—</strong>
+                </div>
+                <button id="useMeasureAsHeightBtn" class="secondary-button" type="button">ใช้ค่านี้เป็น “ความสูงขนมปัง”</button>
+              </details>
               <button id="clearScaleBtn" class="danger-ghost-button" type="button">ล้างเส้นสเกล</button>
             </section>
 
-            <section class="panel-section">
+            <section class="panel-section" id="section-roi">
+              <div class="section-heading">
+                <span class="step-number">3</span>
+                <div>
+                  <h2>บริเวณที่วิเคราะห์ (ROI)</h2>
+                  <p>ลากครอบเฉพาะเนื้อขนมปัง ไม่รวมเปลือกและพื้นหลัง</p>
+                </div>
+              </div>
+              <div class="button-pair">
+                <button class="secondary-button roi-button" data-roi-tool="roi-ellipse" type="button">◯ ลากวงรี</button>
+                <button class="secondary-button roi-button" data-roi-tool="roi-rect" type="button">▭ ลากสี่เหลี่ยม</button>
+              </div>
+              <div class="button-pair">
+                <button id="wholeImageRoiBtn" class="secondary-button" type="button">ใช้ทั้งภาพ</button>
+                <button id="clearRoiBtn" class="danger-ghost-button" type="button">ล้าง ROI</button>
+              </div>
+            </section>
+
+            <section class="panel-section" id="section-analyze">
               <div class="section-heading">
                 <span class="step-number">4</span>
                 <div>
-                  <h2>ประมวลผลภาพ</h2>
-                  <p>ปรับ Threshold และเกณฑ์คัดกรองรูพรุน</p>
+                  <h2>หารูพรุน</h2>
+                  <p>ระบบแยก “รู” กับ “เนื้อขนมปัง” ด้วยความสว่าง (Threshold)</p>
                 </div>
-              </div>
-              <label class="range-label">Threshold <strong id="thresholdValue">115</strong>
-                <input id="thresholdInput" type="range" min="0" max="255" value="115" />
-              </label>
-              <button id="otsuBtn" class="secondary-button" type="button">หา Threshold อัตโนมัติ (Otsu)</button>
-              <div class="input-row">
-                <label>ลักษณะรูพรุน
-                  <select id="poreModeSelect">
-                    <option value="dark">มืดกว่าพื้นขนมปัง</option>
-                    <option value="light">สว่างกว่าพื้นขนมปัง</option>
-                  </select>
-                </label>
-                <label>พื้นที่ต่ำสุด (px²)
-                  <input id="minAreaInput" type="number" min="1" step="1" value="20" />
-                </label>
-              </div>
-              <label>พื้นที่สูงสุดต่อรู (% ของ ROI)
-                <input id="maxAreaInput" type="number" min="0.01" max="100" step="0.1" value="12" />
-              </label>
-              <div class="checkbox-list">
-                <label><input id="cleanMaskInput" type="checkbox" checked /> ลดจุดรบกวนและเติมช่องว่างเล็ก</label>
-                <label><input id="excludeBoundaryInput" type="checkbox" checked /> ไม่นับบริเวณที่ติดขอบ ROI</label>
               </div>
               <button id="analyzeBtn" class="primary-button" type="button">🔬 วิเคราะห์รูพรุน</button>
               <div id="analysisStatus" class="status-message idle">พร้อมวิเคราะห์</div>
+              <label class="range-label">Threshold (ความสว่างที่ใช้แบ่ง) <strong id="thresholdValue">115</strong>
+                <input id="thresholdInput" type="range" min="0" max="255" value="115" />
+              </label>
+              <p class="small-note">เลื่อนแล้วดูโหมด “ขาว-ดำ” ให้รูเป็นสีขาวตรงกับภาพจริงมากที่สุด ผลจะอัปเดตเอง</p>
+              <button id="otsuBtn" class="secondary-button" type="button">✨ หาค่าอัตโนมัติ (Otsu)</button>
+              <details class="advanced">
+                <summary>ตั้งค่าขั้นสูง</summary>
+                <label>รูพรุนในภาพเป็นสี
+                  <select id="poreModeSelect">
+                    <option value="dark">มืดกว่าเนื้อขนมปัง (ปกติ)</option>
+                    <option value="light">สว่างกว่าเนื้อขนมปัง</option>
+                  </select>
+                </label>
+                <div class="input-row">
+                  <label>พื้นที่ต่ำสุดต่อรู (px²)
+                    <input id="minAreaInput" type="number" min="1" step="1" value="20" />
+                  </label>
+                  <label>พื้นที่สูงสุดต่อรู (% ของ ROI)
+                    <input id="maxAreaInput" type="number" min="0.01" max="100" step="0.1" value="12" />
+                  </label>
+                </div>
+                <p id="minAreaHint" class="small-note"></p>
+                <div class="checkbox-list">
+                  <label><input id="cleanMaskInput" type="checkbox" checked /> ลดจุดรบกวนและเติมช่องว่างเล็ก ๆ</label>
+                  <label><input id="excludeBoundaryInput" type="checkbox" checked /> ไม่นับรูที่ถูกขอบ ROI ตัด</label>
+                </div>
+              </details>
             </section>
 
             <section class="results-card">
               <h2>สรุปผล</h2>
               <div class="result-list">
-                <div><span>จำนวนรูพรุน</span><strong id="summaryCount">—</strong></div>
+                <div><span>จำนวนรูพรุนที่นับ</span><strong id="summaryCount">—</strong></div>
                 <div><span>พื้นที่รูพรุนรวม</span><strong id="summaryTotalArea">—</strong></div>
                 <div><span>พื้นที่เฉลี่ยต่อรู</span><strong id="summaryMeanArea">—</strong></div>
-                <div><span>พื้นที่มัธยฐาน</span><strong id="summaryMedianArea">—</strong></div>
-                <div><span>ส่วนเบี่ยงเบนมาตรฐาน</span><strong id="summarySdArea">—</strong></div>
-                <div><span>Porosity ใน ROI</span><strong id="summaryPorosity">—</strong></div>
+                <div><span>มัธยฐาน</span><strong id="summaryMedianArea">—</strong></div>
+                <div><span>ส่วนเบี่ยงเบนมาตรฐาน (S.D.)</span><strong id="summarySdArea">—</strong></div>
+                <div><span>Porosity (รูที่นับ ÷ ROI)</span><strong id="summaryPorosity">—</strong></div>
+                <div><span>สัดส่วนพิกเซลรูทั้งหมดใน ROI</span><strong id="summaryVoid">—</strong></div>
               </div>
+              <p id="summaryExcluded" class="excluded-note"></p>
               <div class="button-pair">
-                <button id="exportPoreCsvBtn" class="export-button" type="button">ดาวน์โหลด CSV</button>
-                <button id="saveSampleBtn" class="secondary-button" type="button">บันทึกเข้าคลัง</button>
+                <button id="exportPoreCsvBtn" class="export-button" type="button">⬇ CSV รายรู</button>
+                <button id="saveSampleBtn" class="secondary-button" type="button">💾 บันทึกเข้าคลัง</button>
               </div>
+            </section>
+
+            <section id="validationCard" class="panel-section validation-card hidden">
+              <p class="eyebrow dark">ACCURACY CHECK</p>
+              <h2>เทียบกับคำตอบจริง</h2>
+              <p>ภาพนี้สร้างจากรูปทรงที่รู้ขนาดแน่นอน ใช้ตรวจว่าโปรแกรมวัดได้ใกล้ความจริงแค่ไหน</p>
+              <div class="table-wrap compact">
+                <table class="compact-table">
+                  <thead><tr><th>รูปทรง</th><th>พื้นที่จริง</th><th>วัดได้</th><th>คลาด</th><th>Circ.</th></tr></thead>
+                  <tbody id="validationBody"></tbody>
+                </table>
+              </div>
+              <p id="validationSummary" class="small-note"></p>
             </section>
           </aside>
 
           <section class="workspace-column">
             <section class="workspace-panel">
               <div class="workspace-topbar">
-                <div>
-                  <strong id="workspaceModeTitle">โหมด Pan</strong>
-                  <span id="workspaceModeDetail">ลากเพื่อเลื่อน · หมุนล้อหรือ Trackpad เพื่อซูม</span>
+                <div class="toolbar" role="toolbar" aria-label="เครื่องมือบนภาพ">
+                  <button class="tool-button active" data-tool="pan" type="button" title="ลากเพื่อเลื่อนภาพ">✋ เลื่อน</button>
+                  <button class="tool-button" data-tool="scale" type="button" title="คลิก 2 จุดบนไม้บรรทัด">📏 สเกล</button>
+                  <button class="tool-button" data-tool="roi-ellipse" type="button" title="ลากวงรีครอบเนื้อขนมปัง">◯ ROI</button>
+                  <button class="tool-button" data-tool="roi-rect" type="button" title="ลากสี่เหลี่ยม">▭ ROI</button>
+                  <button class="tool-button" data-tool="select" type="button" title="คลิกที่รูเพื่อดูค่า">☝ เลือกรู</button>
+                  <button class="tool-button" data-tool="measure" type="button" title="วัดระยะ">📐 วัด</button>
                 </div>
                 <div class="workspace-actions">
-                  <div class="view-switcher">
+                  <div class="view-switcher" role="group" aria-label="มุมมอง">
                     <button class="view-button active" data-view="original" type="button">ภาพจริง</button>
-                    <button class="view-button" data-view="binary" type="button">Binary</button>
-                    <button class="view-button" data-view="detection" type="button">Detected</button>
+                    <button class="view-button" data-view="binary" type="button">ขาว-ดำ</button>
+                    <button class="view-button" data-view="detection" type="button">รูที่พบ</button>
                   </div>
                   <div id="scaleReadout" class="scale-readout">หน่วยพิกเซล</div>
                 </div>
               </div>
+              <div id="toolHint" class="tool-hint-bar">โหมดเลื่อน — ลากเพื่อเลื่อนภาพ · หมุนล้อเมาส์หรือใช้ปุ่ม + − เพื่อซูม</div>
               <div id="canvasWrap" class="canvas-wrap">
                 <canvas id="workspaceCanvas"></canvas>
+                <div class="zoom-controls">
+                  <button type="button" data-zoom="in" aria-label="ซูมเข้า">+</button>
+                  <button type="button" data-zoom="out" aria-label="ซูมออก">−</button>
+                  <button type="button" data-zoom="fit" aria-label="พอดีจอ">⤢</button>
+                </div>
                 <div id="emptyCanvasState" class="empty-canvas-state">
                   <div>🍞</div>
-                  <h2>อัปโหลดภาพหรือใช้ภาพทดลอง</h2>
-                  <p>จากนั้นกำหนดสเกล เลือก ROI และกดวิเคราะห์รูพรุน</p>
+                  <h2>ลากภาพมาวางที่นี่</h2>
+                  <p>หรือกด “เลือกภาพ” / “ใช้ภาพตัวอย่าง” ทางซ้าย</p>
                 </div>
+                <div id="dropOverlay" class="drop-overlay hidden">วางภาพเพื่ออัปโหลด</div>
               </div>
             </section>
 
@@ -179,12 +234,12 @@
               <div class="data-panel-header">
                 <div>
                   <p class="eyebrow dark">PORE DATA</p>
-                  <h2>ข้อมูลรูพรุนรายรู</h2>
-                  <p>คลิกแถวเพื่อเลือกและซูมดูรูพรุน</p>
+                  <h2>ข้อมูลรายรู</h2>
+                  <p>คลิกแถวเพื่อซูมไปที่รูนั้น · เรียงจากใหญ่ไปเล็ก</p>
                 </div>
                 <div id="selectedPoreCard" class="selected-pore-card hidden"></div>
               </div>
-              <div class="table-wrap">
+              <div class="table-wrap table-scroll">
                 <table>
                   <thead>
                     <tr>
@@ -192,8 +247,8 @@
                       <th>พื้นที่</th>
                       <th>เส้นรอบรูป</th>
                       <th>เส้นผ่านศูนย์กลางสมมูล</th>
-                      <th>Circularity</th>
-                      <th>ตำแหน่งกลาง</th>
+                      <th title="4πA/P² — วงกลมสมบูรณ์ = 1">Circularity</th>
+                      <th>ตำแหน่งกลาง (px)</th>
                     </tr>
                   </thead>
                   <tbody id="poreTableBody">
@@ -206,98 +261,135 @@
         </div>
       </section>
 
+      <!-- ============ TAB 2: GEOMETRY ============ -->
       <section id="tab-geometry" class="tab-panel">
         <div class="lab-grid">
           <aside class="lab-sidebar">
             <section class="panel-section">
               <p class="eyebrow dark">GEOMETRY APPROXIMATION</p>
-              <h2>เลือกรูพรุนเป้าหมาย</h2>
-              <label>รูพรุน
+              <h2>วางรูปเรขาคณิตให้ทับรูพรุน</h2>
+              <p>ใช้รูปง่าย ๆ หลายรูปรวมกันให้ได้พื้นที่ใกล้พื้นที่จริงที่สุด</p>
+              <label>รูพรุนเป้าหมาย
                 <select id="geometryPoreSelect"><option value="">ยังไม่มีข้อมูล</option></select>
               </label>
               <div class="tool-grid geometry-tools">
-                <button class="geometry-tool active" data-geometry-tool="circle" type="button">⚪ Circle</button>
-                <button class="geometry-tool" data-geometry-tool="ellipse" type="button">⬭ Ellipse</button>
-                <button class="geometry-tool" data-geometry-tool="rect" type="button">▭ Rectangle</button>
-                <button class="geometry-tool" data-geometry-tool="polygon" type="button">⬠ Polygon</button>
+                <button class="geometry-tool active" data-geometry-tool="circle" type="button">⚪ วงกลม</button>
+                <button class="geometry-tool" data-geometry-tool="ellipse" type="button">⬭ วงรี</button>
+                <button class="geometry-tool" data-geometry-tool="rect" type="button">▭ สี่เหลี่ยม</button>
+                <button class="geometry-tool" data-geometry-tool="polygon" type="button">⬠ หลายเหลี่ยม</button>
+                <button class="geometry-tool" data-geometry-tool="pan" type="button">✋ เลื่อนภาพ</button>
               </div>
-              <p class="small-note">Circle / Ellipse / Rectangle: ลากบนภาพ · Polygon: คลิกวางจุด แล้วกด “จบ Polygon”</p>
+              <div id="geometryHint" class="tool-hint">วงกลม — ลากจากจุดหนึ่งไปอีกจุดบนภาพ</div>
               <div class="button-pair">
-                <button id="finishPolygonBtn" class="secondary-button" type="button">จบ Polygon</button>
-                <button id="undoGeometryBtn" class="secondary-button" type="button">↩ ลบรูปสุดท้าย</button>
+                <button id="finishPolygonBtn" class="secondary-button" type="button">✔ จบรูปหลายเหลี่ยม</button>
+                <button id="undoGeometryBtn" class="secondary-button" type="button">↩ ลบรูปล่าสุด</button>
               </div>
-              <button id="clearGeometryBtn" class="danger-ghost-button" type="button">ล้างรูปของรูนี้</button>
+              <button id="clearGeometryBtn" class="danger-ghost-button" type="button">ล้างรูปทั้งหมดของรูนี้</button>
             </section>
 
             <section class="results-card light-card">
               <h2>ผลการประมาณ</h2>
               <div class="result-list">
-                <div><span>จำนวนรูป</span><strong id="geoShapeCount">0</strong></div>
-                <div><span>พื้นที่จริง</span><strong id="geoActualArea">—</strong></div>
-                <div><span>พื้นที่ประมาณแบบ Union</span><strong id="geoEstimateArea">—</strong></div>
+                <div><span>จำนวนรูปที่วาง</span><strong id="geoShapeCount">0</strong></div>
+                <div><span>พื้นที่จริง (นับพิกเซล)</span><strong id="geoActualArea">—</strong></div>
+                <div><span>พื้นที่ที่รูปครอบ (ไม่นับซ้ำ)</span><strong id="geoEstimateArea">—</strong></div>
+                <div><span>ผลรวมจากสูตร (นับส่วนซ้อนซ้ำ)</span><strong id="geoFormulaArea">—</strong></div>
                 <div><span>Percent Error</span><strong id="geoPercentError">—</strong></div>
-                <div><span>IoU</span><strong id="geoIou">—</strong></div>
+                <div><span title="ส่วนที่ทับกัน ÷ ส่วนที่รวมกัน">IoU (ความทับซ้อน)</span><strong id="geoIou">—</strong></div>
               </div>
-              <div id="geometryChallenge" class="challenge-box">เป้าหมาย: Error &lt; 5% และ IoU &gt; 0.85</div>
+              <div id="geometryChallenge" class="challenge-box">ภารกิจ: ให้ Error &lt; 5% และ IoU &gt; 0.85</div>
+              <p class="small-note">ทำไมต้องดู IoU? เพราะพื้นที่เท่ากันได้ แม้รูปจะวางผิดที่</p>
             </section>
           </aside>
 
           <section class="lab-main">
             <div class="workspace-panel">
               <div class="workspace-topbar">
-                <div>
-                  <strong>Geometry Canvas</strong>
-                  <span>ซูมและเลื่อนได้เหมือนหน้า Analyze</span>
+                <div class="topbar-title">
+                  <strong>พื้นที่วาดรูป</strong>
+                  <span>หมุนล้อเพื่อซูม · กด Shift ค้างแล้วลาก หรือใช้ ✋ เพื่อเลื่อน</span>
                 </div>
-                <button id="fitGeometryBtn" class="secondary-button" type="button">ซูมไปที่รูที่เลือก</button>
+                <button id="fitGeometryBtn" class="secondary-button compact-button" type="button">🔍 ซูมไปที่รูที่เลือก</button>
               </div>
               <div class="canvas-wrap geometry-canvas-wrap">
                 <canvas id="geometryCanvas"></canvas>
                 <div id="geometryEmptyState" class="empty-canvas-state">
                   <div>📐</div>
-                  <h2>วิเคราะห์ภาพและเลือกรูพรุนก่อน</h2>
+                  <h2>ยังไม่มีรูพรุนให้เลือก</h2>
+                  <p>ไปที่แท็บ 1 แล้วกด “วิเคราะห์รูพรุน” ก่อน</p>
+                  <button class="secondary-button go-analyze" type="button">ไปแท็บวิเคราะห์ภาพ</button>
                 </div>
               </div>
             </div>
             <section class="data-panel">
-              <h2>รายการรูปเรขาคณิต</h2>
+              <h2>รูปที่วางแล้ว</h2>
               <div id="shapeList" class="shape-list"><span class="shape-chip muted">ยังไม่ได้วางรูป</span></div>
             </section>
           </section>
         </div>
       </section>
 
+      <!-- ============ TAB 3: CALCULUS ============ -->
       <section id="tab-calculus" class="tab-panel">
         <div class="calculus-grid">
           <aside class="lab-sidebar">
             <section class="panel-section">
               <p class="eyebrow dark">CALCULUS LAB</p>
-              <h2>พื้นที่ด้วยผลบวกรีมันน์</h2>
+              <h2>พื้นที่รูพรุนด้วยผลบวกรีมันน์</h2>
               <label>รูพรุน
                 <select id="calculusPoreSelect"><option value="">ยังไม่มีข้อมูล</option></select>
               </label>
-              <label>จำนวนช่วง n
-                <input id="riemannNInput" type="range" min="4" max="100" value="20" />
-                <strong id="riemannNValue">20</strong>
-              </label>
-              <label>วิธีประมาณ
-                <select id="riemannMethodSelect">
-                  <option value="left">Left Riemann</option>
-                  <option value="midpoint" selected>Midpoint Riemann</option>
-                  <option value="right">Right Riemann</option>
-                  <option value="trapezoid">Trapezoidal Rule</option>
+              <label>แบ่งรูพรุนเป็นแถบตามแนว
+                <select id="calculusAxisSelect">
+                  <option value="x">แถบแนวตั้ง — ∫ f(x) dx</option>
+                  <option value="y">แถบแนวนอน — ∫ g(y) dy</option>
                 </select>
               </label>
-              <button id="calculateRiemannBtn" class="primary-button" type="button">คำนวณพื้นที่</button>
+              <label class="range-label">จำนวนแถบ n <strong id="riemannNValue">10</strong>
+                <input id="riemannNInput" type="range" min="1" max="200" value="10" />
+              </label>
+              <div class="n-presets">
+                <button type="button" data-n="4">4</button>
+                <button type="button" data-n="10">10</button>
+                <button type="button" data-n="25">25</button>
+                <button type="button" data-n="50">50</button>
+                <button type="button" data-n="100">100</button>
+                <button type="button" data-n="200">200</button>
+              </div>
+              <label>วิธีประมาณ
+                <select id="riemannMethodSelect">
+                  <option value="left">ผลบวกซ้าย (Left)</option>
+                  <option value="right">ผลบวกขวา (Right)</option>
+                  <option value="midpoint">จุดกึ่งกลาง (Midpoint)</option>
+                  <option value="lower">ผลบวกล่าง (Lower sum)</option>
+                  <option value="upper">ผลบวกบน (Upper sum)</option>
+                  <option value="trapezoid">กฎสี่เหลี่ยมคางหมู (Trapezoidal)</option>
+                  <option value="simpson">กฎของซิมป์สัน (Simpson)</option>
+                </select>
+              </label>
+              <div id="methodFormula" class="formula-box"></div>
+              <button id="playNBtn" class="secondary-button" type="button">▶ ดูภาพเคลื่อนไหวเมื่อ n เพิ่มขึ้น</button>
             </section>
 
             <section class="results-card light-card">
               <h2>ผลการคำนวณ</h2>
               <div class="result-list">
-                <div><span>พื้นที่จริงจากพิกเซล</span><strong id="riemannActual">—</strong></div>
-                <div><span>พื้นที่ประมาณ</span><strong id="riemannEstimate">—</strong></div>
-                <div><span>Absolute Error</span><strong id="riemannAbsoluteError">—</strong></div>
+                <div><span>ความกว้างรู L</span><strong id="calcLength">—</strong></div>
+                <div><span>ความกว้างแถบ Δx = L/n</span><strong id="calcDx">—</strong></div>
+                <div><span>ค่าประมาณ</span><strong id="riemannEstimate">—</strong></div>
+                <div><span>พื้นที่จริง (นับพิกเซล)</span><strong id="riemannActual">—</strong></div>
+                <div><span>ความคลาดเคลื่อน</span><strong id="riemannAbsoluteError">—</strong></div>
                 <div><span>Percent Error</span><strong id="riemannPercentError">—</strong></div>
+              </div>
+              <div class="squeeze-box">
+                <div class="squeeze-title">ผลบวกล่าง ≤ พื้นที่จริง ≤ ผลบวกบน</div>
+                <div class="squeeze-values"><span id="squeezeLower">—</span><span>≤</span><span id="squeezeActual">—</span><span>≤</span><span id="squeezeUpper">—</span></div>
+                <div class="squeeze-gap">ช่องว่าง (บน − ล่าง) = <strong id="squeezeGap">—</strong></div>
+              </div>
+              <div class="challenge-box" id="calcChallenge">
+                ภารกิจ: หา n ที่น้อยที่สุดที่วิธีนี้ให้ Error &lt; 1%
+                <button id="revealChallengeBtn" class="link-button" type="button">ดูเฉลย</button>
+                <span id="challengeAnswer"></span>
               </div>
             </section>
           </aside>
@@ -305,36 +397,71 @@
           <section class="lab-main">
             <section class="chart-card">
               <div class="chart-header">
-                <div><h2>ภาพรวม Riemann Sum</h2><p>ความสูงของแต่ละแถบแทนจำนวนพิกเซลรูพรุนในแนวดิ่ง</p></div>
+                <div>
+                  <h2>จากรูพรุนสู่กราฟ</h2>
+                  <p id="profileExplain">f(x) คือความยาวของรูพรุนในแนวตั้งที่ตำแหน่ง x — พื้นที่รูพรุนจึงเท่ากับพื้นที่ใต้กราฟ f</p>
+                </div>
               </div>
-              <canvas id="riemannChart" class="chart-canvas" width="1000" height="480"></canvas>
+              <div class="calc-visual-grid">
+                <div class="calc-visual">
+                  <div class="calc-visual-label">รูพรุนที่เลือก แบ่งเป็น n แถบ</div>
+                  <canvas id="poreStripCanvas" class="chart-canvas" data-h="340"></canvas>
+                </div>
+                <div class="calc-visual">
+                  <div class="calc-visual-label">กราฟ f และแถบที่ใช้ประมาณ</div>
+                  <canvas id="riemannChart" class="chart-canvas" data-h="340"></canvas>
+                </div>
+              </div>
+              <div id="stripTooltip" class="strip-info">ชี้เมาส์ที่แถบใดก็ได้เพื่อดูค่าของแถบนั้น</div>
             </section>
 
             <section class="chart-card">
               <div class="chart-header">
-                <div><h2>Error Convergence</h2><p>เปรียบเทียบความคลาดเคลื่อนเมื่อเพิ่มจำนวนช่วง</p></div>
+                <div><h2>เมื่อ n → ∞ ค่าประมาณเข้าใกล้อะไร?</h2><p id="convergenceExplain">เส้นประคือพื้นที่จริง ผลบวกล่างเข้ามาจากด้านล่าง ผลบวกบนเข้ามาจากด้านบน</p></div>
+                <div class="view-switcher light">
+                  <button class="conv-view active" data-conv="estimate" type="button">ค่าประมาณ</button>
+                  <button class="conv-view" data-conv="error" type="button">% Error ทุกวิธี</button>
+                </div>
               </div>
-              <canvas id="convergenceChart" class="chart-canvas" width="1000" height="420"></canvas>
+              <canvas id="convergenceChart" class="chart-canvas" data-h="380"></canvas>
+            </section>
+
+            <section class="chart-card">
+              <details id="stepTableDetails">
+                <summary><strong>ตารางคำนวณทีละแถบ</strong> <span class="muted">(ใช้ตรวจการคำนวณด้วยมือ)</span></summary>
+                <div class="table-wrap table-scroll">
+                  <table>
+                    <thead id="stepTableHead"></thead>
+                    <tbody id="stepTableBody"></tbody>
+                    <tfoot id="stepTableFoot"></tfoot>
+                  </table>
+                </div>
+                <button id="exportStepCsvBtn" class="secondary-button compact-button" type="button">⬇ ดาวน์โหลดตารางเป็น CSV</button>
+              </details>
             </section>
           </section>
         </div>
       </section>
 
+      <!-- ============ TAB 4: REPOSITORY ============ -->
       <section id="tab-repository" class="tab-panel">
         <div class="repository-grid">
           <aside class="lab-sidebar">
-            <section class="panel-section">
-              <p class="eyebrow dark">SAMPLE METADATA</p>
+            <section class="panel-section" id="metadataSection">
+              <p class="eyebrow dark">SAMPLE INFO</p>
               <h2>ข้อมูลตัวอย่าง</h2>
+              <p>กรอกแล้วกดบันทึก ระบบจะเก็บภาพ การตั้งค่า และผลวิเคราะห์ปัจจุบันไว้ด้วยกัน</p>
               <label>ชื่อกลุ่ม
-                <input id="groupNameInput" type="text" placeholder="เช่น M5-Group-01" />
+                <input id="groupNameInput" type="text" placeholder="เช่น ม.5/1 กลุ่ม 1" />
               </label>
-              <label>รหัสตัวอย่าง
-                <input id="sampleCodeInput" type="text" placeholder="เช่น SD-001" />
-              </label>
-              <label>รหัสชุดทดลอง / Series
-                <input id="seriesCodeInput" type="text" placeholder="เช่น DOUGH-A" />
-              </label>
+              <div class="input-row">
+                <label>รหัสตัวอย่าง
+                  <input id="sampleCodeInput" type="text" placeholder="เช่น SD-001" />
+                </label>
+                <label>ชุดทดลอง (Series)
+                  <input id="seriesCodeInput" type="text" placeholder="เช่น หัวเชื้อ-A" />
+                </label>
+              </div>
               <div class="input-row">
                 <label>เวลาหมัก (นาที)
                   <input id="fermentationInput" type="number" min="0" step="1" value="0" />
@@ -343,27 +470,33 @@
                   <input id="temperatureInput" type="number" step="0.1" placeholder="28" />
                 </label>
               </div>
-              <label>Hydration (%)
-                <input id="hydrationInput" type="number" min="0" max="200" step="0.1" placeholder="75" />
-              </label>
+              <div class="input-row">
+                <label>Hydration (%)
+                  <input id="hydrationInput" type="number" min="0" max="200" step="0.1" placeholder="75" />
+                </label>
+                <label>ความสูงขนมปัง (cm)
+                  <input id="loafHeightInput" type="number" min="0" step="0.01" placeholder="8.5" />
+                </label>
+              </div>
               <label>หมายเหตุ
-                <textarea id="notesInput" rows="4" placeholder="บันทึกสูตร แป้ง Starter หรือเงื่อนไขทดลอง"></textarea>
+                <textarea id="notesInput" rows="3" placeholder="สูตร แป้ง หัวเชื้อ หรือเงื่อนไขการทดลอง"></textarea>
               </label>
-              <button id="saveRepositoryBtn" class="primary-button" type="button">บันทึกตัวอย่างปัจจุบัน</button>
+              <button id="saveRepositoryBtn" class="primary-button" type="button">💾 บันทึกตัวอย่างปัจจุบัน</button>
+              <p id="saveReadiness" class="small-note"></p>
             </section>
 
             <section class="panel-section">
-              <h2>นำเข้า–ส่งออกคลัง</h2>
+              <h2>สำรอง / ย้ายข้อมูล</h2>
+              <p>ข้อมูลเก็บในเบราว์เซอร์เครื่องนี้เท่านั้น ควรส่งออกไฟล์สำรองหลังเลิกคาบ</p>
               <div class="button-stack">
-                <button id="exportRepositoryJsonBtn" class="secondary-button" type="button">ส่งออก JSON</button>
-                <button id="exportRepositoryCsvBtn" class="secondary-button" type="button">ส่งออก Summary CSV</button>
+                <button id="exportRepositoryJsonBtn" class="secondary-button" type="button">⬇ ส่งออกไฟล์สำรอง (JSON)</button>
+                <button id="exportRepositoryCsvBtn" class="secondary-button" type="button">⬇ ส่งออกตารางสรุป (CSV)</button>
                 <label class="upload-button secondary-upload">
-                  <input id="importRepositoryInput" type="file" accept="application/json" />
-                  นำเข้า JSON
+                  <input id="importRepositoryInput" type="file" accept="application/json,.json" />
+                  ⬆ นำเข้าไฟล์สำรอง
                 </label>
                 <button id="clearRepositoryBtn" class="danger-ghost-button" type="button">ล้างคลังทั้งหมด</button>
               </div>
-              <p class="small-note">ข้อมูลถูกเก็บในเบราว์เซอร์เครื่องนี้ ไม่ส่งขึ้นเซิร์ฟเวอร์</p>
             </section>
           </aside>
 
@@ -380,11 +513,13 @@
         </div>
       </section>
 
+      <!-- ============ TAB 5: DASHBOARD ============ -->
       <section id="tab-dashboard" class="tab-panel">
         <div class="dashboard-toolbar">
           <div>
             <p class="eyebrow dark">GROWTH ANALYSIS</p>
-            <h2>การเปลี่ยนแปลงของรูพรุนตามเวลา</h2>
+            <h2>การเปลี่ยนแปลงตามเวลาหมัก</h2>
+            <p class="muted">แต่ละ Series แสดงเป็นเส้นสีของตัวเอง</p>
           </div>
           <div class="dashboard-controls">
             <label>Series
@@ -396,6 +531,7 @@
                 <option value="porosity">Porosity</option>
                 <option value="poreCount">จำนวนรูพรุน</option>
                 <option value="totalArea">พื้นที่รูพรุนรวม</option>
+                <option value="loafHeight">ความสูงขนมปัง</option>
               </select>
             </label>
           </div>
@@ -403,20 +539,20 @@
 
         <div class="dashboard-grid">
           <section class="chart-card dashboard-chart-card">
-            <div class="chart-header"><div><h2 id="growthChartTitle">พื้นที่รูพรุนเฉลี่ยตามเวลา</h2><p>ข้อมูลจากตัวอย่างในคลัง</p></div></div>
-            <canvas id="growthChart" class="chart-canvas" width="1100" height="520"></canvas>
+            <div class="chart-header"><div><h2 id="growthChartTitle">พื้นที่รูพรุนเฉลี่ยตามเวลา</h2><p>ข้อมูลจากตัวอย่างในคลัง (ถ้าเวลาซ้ำกันจะใช้ค่าเฉลี่ย)</p></div></div>
+            <canvas id="growthChart" class="chart-canvas" data-h="420"></canvas>
           </section>
           <section class="chart-card">
-            <div class="chart-header"><div><h2>อัตราการเปลี่ยนแปลง</h2><p>ประมาณอนุพันธ์ด้วย finite differences</p></div></div>
-            <canvas id="derivativeChart" class="chart-canvas" width="1100" height="420"></canvas>
+            <div class="chart-header"><div><h2>อัตราการเปลี่ยนแปลง (อนุพันธ์โดยประมาณ)</h2><p>ใช้ผลต่างสืบเนื่อง: จุดกลางใช้ผลต่างกลาง [y(t+1) − y(t−1)] ÷ [t(t+1) − t(t−1)] จุดปลายใช้ผลต่างข้างเดียว</p></div></div>
+            <canvas id="derivativeChart" class="chart-canvas" data-h="340"></canvas>
           </section>
         </div>
 
         <section class="data-panel">
-          <h2>ตารางการเติบโต</h2>
+          <h2>ตารางการเปลี่ยนแปลง</h2>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Series</th><th>เวลา (min)</th><th>ค่า</th><th>อัตราการเปลี่ยนแปลง</th><th>หน่วย</th></tr></thead>
+              <thead><tr><th>Series</th><th>เวลา (นาที)</th><th>ค่า</th><th>อัตราการเปลี่ยนแปลง</th><th>หน่วยอัตรา</th></tr></thead>
               <tbody id="growthTableBody"><tr><td colspan="5" class="empty-table-cell">ยังไม่มีข้อมูลเพียงพอ</td></tr></tbody>
             </table>
           </div>
@@ -425,12 +561,40 @@
     </main>
 
     <footer>
-        <p>
-    &copy; 2026 MathScope Lab. Designed and developed by
-    Dr. Saharat Tabonglek
-  </p>
+      <p>&copy; 2026 MathScope Lab · Designed and developed by STEAM ทีมวิชาการ 1</p>
+      <p class="muted">ประมวลผลทั้งหมดในเบราว์เซอร์ ไม่มีการส่งภาพขึ้นอินเทอร์เน็ต</p>
     </footer>
   </div>
+
+  <div id="toastHost" class="toast-host" aria-live="polite"></div>
+
+  <dialog id="helpDialog" class="help-dialog">
+    <form method="dialog">
+      <h2>วิธีใช้ MathScope Lab</h2>
+      <ol class="help-steps">
+        <li><strong>เลือกภาพ</strong> — ภาพหน้าตัดขนมปังที่มีไม้บรรทัดวางข้าง ๆ (หรือกด “ใช้ภาพตัวอย่าง” เพื่อลองก่อน)</li>
+        <li><strong>ตั้งสเกล</strong> — คลิก 2 จุดบนไม้บรรทัด แล้วพิมพ์ระยะจริง เช่น 10 mm</li>
+        <li><strong>เลือกบริเวณ (ROI)</strong> — ลากวงรีหรือสี่เหลี่ยมครอบเฉพาะเนื้อขนมปัง</li>
+        <li><strong>วิเคราะห์</strong> — กดปุ่ม แล้วดูโหมด “ขาว-ดำ” ถ้ารูยังไม่ตรง ให้เลื่อน Threshold</li>
+        <li><strong>ต่อยอด</strong> — แท็บ 2 ประมาณพื้นที่ด้วยรูปเรขาคณิต · แท็บ 3 ผลบวกรีมันน์ · แท็บ 4–5 บันทึกหลายเวลาหมักเพื่อดูอัตราการเปลี่ยนแปลง</li>
+      </ol>
+      <h3>ถ่ายภาพอย่างไรให้วัดได้แม่น</h3>
+      <ul class="help-tips">
+        <li>หั่นด้วยมีดคม ให้หน้าตัดเรียบ</li>
+        <li>ถ่ายตั้งฉากกับหน้าตัด ไม่เอียง</li>
+        <li>วางไม้บรรทัดให้อยู่ระนาบเดียวกับหน้าตัด</li>
+        <li>แสงสม่ำเสมอ ไม่มีเงาแข็ง ไม่ใช้แฟลชตรง</li>
+        <li>ปิดไฟล์ที่ถูกบีบอัดมาก ๆ (เช่นภาพจากแชต) ถ้าทำได้</li>
+      </ul>
+      <h3>ข้อควรรู้</h3>
+      <ul class="help-tips">
+        <li>ค่าที่ได้คือพื้นที่บน “ภาพ 2 มิติ” ของหน้าตัด ไม่ใช่ปริมาตรของรู</li>
+        <li>รูที่เล็กกว่าประมาณ 3×3 พิกเซลจะถูกตัดทิ้งเมื่อเปิด “ลดจุดรบกวน”</li>
+        <li>กด “ภาพทดสอบความแม่นยำ” เพื่อดูว่าโปรแกรมวัดรูปที่รู้ขนาดจริงได้คลาดเท่าไร</li>
+      </ul>
+      <div class="dialog-actions"><button class="primary-button" value="close">เข้าใจแล้ว</button></div>
+    </form>
+  </dialog>
 
   <script src="./app.js"></script>
 </body>
